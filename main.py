@@ -32,16 +32,23 @@ def getnewsAddress():
     return news
 content = getnewsAddress()
 """
-driver = webdriver.ChromeOptions()
-driver.add_argument("headless")
-driver = webdriver.Chrome(options=driver)
+
 base_url = 'https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&rsv_idx=1&tn=baidu&wd=%E6%98%A0%E5%AE%87%E5%AE%99'
 def get_price():
+    driver = webdriver.ChromeOptions()
+    driver.add_argument("headless")
+    driver = webdriver.Chrome(options=driver)
     driver.get(base_url)
-    time.sleep(1)
-    location = driver.find_element(By.CLASS_NAME, 'price_2jYb9')
-    content = location.text
-    return content
+    time.sleep(10)
+    try:
+        location = driver.find_element(By.CLASS_NAME, 'price_2jYb9')
+    except:
+        print("not found, error here!")
+        driver.close()
+    else:
+        content = location.text
+        driver.close()
+        return content
 class Messenger:
     def __init__(self, token=os.getenv("DD_ACCESS_TOKEN"), secret=os.getenv("DD_SECRET")):
         self.timestamp = str(round(time.time() * 1000))
@@ -64,15 +71,18 @@ class Messenger:
             params=self.params,
             headers=self.headers
         )
-
+#the token and secret of Dingtalk robot
 m = Messenger(
     token="51cd61253bab887c78b31f2bbace9c43d9a487cba39fca4da7cb3802c9265f4b",
     secret="SEC94fce2e40f1cf5ef56c506dd52d664775f56af3f2c206eff303bde39ce79b26a")
 def myjob():
-    content = get_price()
-    m.send_text(content)
+    price = get_price()
+    if float(price) > 1.30:
+        m.send_text(price)
+    else:
+        print("lower price for shares", price)
 
-schedule. every(20).seconds.do(myjob)
+schedule. every(1).minutes.do(myjob)
 while True:
     schedule.run_pending()
     time.sleep(1)
