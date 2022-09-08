@@ -32,7 +32,7 @@ def getnewsAddress():
     return news
 content = getnewsAddress()
 """
-
+#url setup
 base_url = 'https://www.baidu.com/s?ie=utf-8&f=8&rsv_bp=1&rsv_idx=1&tn=baidu&wd=%E6%98%A0%E5%AE%87%E5%AE%99'
 def get_price():
     driver = webdriver.ChromeOptions()
@@ -44,7 +44,9 @@ def get_price():
         location = driver.find_element(By.CLASS_NAME, 'price_2jYb9')
     except:
         print("not found, error here!")
+        content = 0
         driver.close()
+        return content
     else:
         content = location.text
         driver.close()
@@ -75,15 +77,23 @@ class Messenger:
 m = Messenger(
     token="51cd61253bab887c78b31f2bbace9c43d9a487cba39fca4da7cb3802c9265f4b",
     secret="SEC94fce2e40f1cf5ef56c506dd52d664775f56af3f2c206eff303bde39ce79b26a")
+def increase():
+    n = 0
+    while True:
+        n = n + 1
+        yield n
+it = increase()
+def counter():
+    return next(it)
 def myjob():
     price = get_price()
     if float(price) > 1.30:
         m.send_text(price)
     else:
-        print("lower price for shares", price)
+        print("lower price for shares", price, counter())
 
-schedule. every(1).minutes.do(myjob)
+
+schedule. every(50).seconds.do(myjob)
 while True:
     schedule.run_pending()
     time.sleep(1)
-
